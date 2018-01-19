@@ -4,3 +4,8 @@ Ideally for production a lot needs to still be done. I have detailed a lot of th
 
 Please take a look at the commit history as I have tried to leave comments as to my logic whilst building the project, aweareness of issues that were outside of the scope of the challenge, as well as a few questions. 
 
+TODOs Include
+-Standardize css animations and transitions across all browsers, via browserfi or some other method
+-host app on an server and port over sensitive information and api calls away from client.
+-handle edge cases and network/response errors and timeouts
+
