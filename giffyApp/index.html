@@ -6,45 +6,76 @@
 </head>
 <body>
   <div id="app">
-    <img src="https://vuejs.org/images/logo.png" alt="Vue logo">
-    <h1>{{ greeting }}</h1>
-    <ul>
-      <li>
-        To learn more about Vue, visit
-        <a :href="docsURL" target="_blank">
-          {{ humanizeURL(docsURL) }}
-        </a>
-      </li>
-      <li>
-        For live help with simple questions, check out
-        <a :href="discordURL" target="_blank">
-          the Discord chat
-        </a>
-      </li>
-      <li>
-        For more complex questions, post to
-        <a :href="forumURL" target="_blank">
-          the forum
-        </a>
-      </li>
-    </ul>
+    <giffy-wheel v-bind:giffy-results="giffyResults"></giffy-wheel>
   </div>
 
   <script>
+    var consts = {
+      urls: {
+        giffySearch: {
+          //TODO not safe to stor api key on front end, implement request to server with auth token for api key on app launch
+          api_key: 'jMoCXaYl2KFibNaeNSZPaviHDMXNCdgw',
+          type: 'GET',
+          base: 'https://api.giphy.com/v1/gifs/search',
+          filters: {
+            q: 'game of thrones',
+            limit: 25,
+            offset: 0,
+            rating: 'PG-13',
+            lang: 'en'
+          }
+        }
+      }
+    }
+    //Components
+    var GiffyWheel = {
+      //Question: Vue.js documentation indicates that Vue.js does not implemnt templateURLs like angular. Does the team implemenet a workaround? 
+      template : '<ul><li v-for="gif in giffyResults">{{gif.id}}</li></ul>',
+      props: ['giffyResults']
+    }
     var app = new Vue({
       el: '#app',
       data: {
-        greeting: 'Welcome to your Vue.js app!',
-        docsURL: 'http://vuejs.org/guide/',
-        discordURL: 'https://chat.vuejs.org',
-        forumURL: 'http://forum.vuejs.org/'
+        giffyResults: []
       },
       methods: {
         humanizeURL: function (url) {
           return url
             .replace(/^https?:\/\//, '')
             .replace(/\/$/, '')
+        },
+
+        giffySearch: function(filters, callback){
+          var queryString = '?api_key='+consts.urls.giffySearch.api_key;
+          //Because this is a simple get call, we adhere to CORS requirements and can perform the request directly from the client and even file protocol without needing to host on a server
+          var xhttp = new XMLHttpRequest();
+          var formData = new FormData();    
+          xhttp.onreadystatechange = function() {
+        
+              if (this.readyState == 4 && this.status == 200){
+                var response = JSON.parse(xhttp.responseText);
+                callback(response.data);//let the callback decide how to use the data
+              }
+        
+          }
+
+          for (var filterKey in filters){        
+              //we could abstract and decouple the query string generation method from the vue componenet even further by creating a utility object with a generateQueryParams function
+              queryString+='&'+filterKey+'='+filters[filterKey];
+          }
+          xhttp.open(consts.urls.giffySearch.type, consts.urls.giffySearch.base+queryString, true);
+          xhttp.send();
         }
+      },
+      components: {
+        'giffy-wheel': GiffyWheel
+      },
+      created: function(){
+        
+        var that = this;
+        this.giffySearch(consts.urls.giffySearch.filters, function(searchResults){
+          app.$data.giffyResults = searchResults;
+        });
       }
     })
   </script>
