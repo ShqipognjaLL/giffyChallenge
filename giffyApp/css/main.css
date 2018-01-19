@@ -1,0 +1,14 @@
+/*if we were using SASS we could easily port all these over into nesting pattern*/
+
+#main_result_list li{
+	padding-bottom: 1%;
+}
+
+#main_result_list li img{
+	border: thick solid lightgrey;
+	padding: 0;
+}
+
+#main_result_list li img:not(:first-child){
+	margin-left: 1%;
+}
