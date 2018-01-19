@@ -9,6 +9,10 @@
 	padding: 0;
 	transition: all .2s ease-in-out;
 }
+#main_result_list.hovering li img:not(.modalFocus){
+	z-index: 0;
+	opacity: .3;
+}
 #main_result_list li img:hover{
 	transform: scale(2);
 	
@@ -23,7 +27,3 @@
 	opacity: 1;
 }
 
-.blurFocus{
-	z-index: 0;
-	background:rgba(0,0,0,0.3);
-}
