@@ -75,13 +75,13 @@
     //Components
     var GiffyWheel = {
       //Question: Vue.js documentation indicates that Vue.js does not implemnt templateURLs like angular. Does the team implemenet a workaround? 
-      template : '<ul id="main_result_list" class="container-fluid"><li v-for="row in paginatedResults" class="row"><img v-for="(gif, index) in row" :src="gif.images.fixed_height_small_still.url" class="col-2 img-fluid rounded-circle" v-bind:class="isFirst(index)"/></li></ul>',
+      template : '<ul id="main_result_list" class="container-fluid"><li v-for="(row, row_index) in paginatedResults" class="row"><img v-for="(gif, col_index) in row" :src="gif.images.fixed_height_small_still.url" class="col-2 img-fluid rounded-circle" v-bind:class="isFirst(col_index)" v-bind:style="maintainOrientation(row_index, col_index)"/></li></ul>',
       props: ['giffyResults'],
       computed: {
         paginatedResults: function(){
           var nestedArray = [];
           var offset=0;
-          //TODO make 5 a pagination parameter
+          //TODO make 5 a pagination parameter 
           for(var i=5; i<this.giffyResults.length; i+=5){
             nestedArray.push(this.giffyResults.slice(offset, i));
             offset = i;
@@ -89,6 +89,7 @@
           nestedArray.push(this.giffyResults.slice(offset));//get remaining elements 
           return nestedArray;
         }
+        
       },
       methods: {
         isFirst: function(index){
@@ -98,6 +99,12 @@
             return offsetClass;
           }
           return "";
+        },
+        //TODO update 5 with same pagination parameter
+        //this should also work if the app scales to implement filtering or re-ordering of results and will update the orientation of the immage element to properly transition
+        maintainOrientation: function(yPosition, xPosition){
+         
+          return {transformOrigin: xPosition/5*100+"% "+yPosition/5*100+"%"}
         }
       }
     }
