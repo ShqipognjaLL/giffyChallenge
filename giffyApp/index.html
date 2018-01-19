@@ -6,10 +6,20 @@
 </head>
 <body>
   <div id="app">
+    <input id="mainSearchBar" v-model="searchParam"></input><button v-on:click="updateSearchResults">Search</button>
     <giffy-wheel v-bind:giffy-results="giffyResults"></giffy-wheel>
   </div>
 
   <script>
+    Filter = function(searchText, limit, offset, rating, lang){
+    
+      this.q=searchText;
+      this.limit=limit;
+      this.offset=offset;
+      this.rating=rating;
+      this.lang = lang;
+    }
+
     var consts = {
       urls: {
         giffySearch: {
@@ -17,16 +27,35 @@
           api_key: 'jMoCXaYl2KFibNaeNSZPaviHDMXNCdgw',
           type: 'GET',
           base: 'https://api.giphy.com/v1/gifs/search',
-          filters: {
-            q: 'game of thrones',
-            limit: 25,
-            offset: 0,
-            rating: 'PG-13',
-            lang: 'en'
-          }
+          filters: new Filter('', 25, 0, 'PG-13', 'en')
+
         }
       }
     }
+    //we moved giffySearch function outside the main app as this method does not depend on any app specific entities but rather on the giffy api itself, hence it makes no sense to couple it to the app component.
+    function giffySearch(filters, callback){
+      var queryString = '?api_key='+consts.urls.giffySearch.api_key;
+      //Because this is a simple get call, we adhere to CORS requirements and can perform the request directly from the client and even file protocol without needing to host on a server
+      var xhttp = new XMLHttpRequest();
+      var formData = new FormData();    
+      xhttp.onreadystatechange = function() {
+          
+          if (this.readyState == 4 && this.status == 200){
+            
+            var response = JSON.parse(xhttp.responseText);
+            callback(response.data);//let the callback decide how to use the data
+          }
+    
+      }
+
+      for (var filterKey in filters){        
+          //we could abstract and decouple the query string generation method from the vue componenet even further by creating a utility object with a generateQueryParams function
+          queryString+='&'+filterKey+'='+filters[filterKey];
+      }
+      xhttp.open(consts.urls.giffySearch.type, consts.urls.giffySearch.base+queryString, true);
+      xhttp.send();
+    }
+
     //Components
     var GiffyWheel = {
       //Question: Vue.js documentation indicates that Vue.js does not implemnt templateURLs like angular. Does the team implemenet a workaround? 
@@ -36,6 +65,7 @@
     var app = new Vue({
       el: '#app',
       data: {
+        searchParam: 'Type Here To Search',
         giffyResults: []
       },
       methods: {
@@ -44,36 +74,21 @@
             .replace(/^https?:\/\//, '')
             .replace(/\/$/, '')
         },
-
-        giffySearch: function(filters, callback){
-          var queryString = '?api_key='+consts.urls.giffySearch.api_key;
-          //Because this is a simple get call, we adhere to CORS requirements and can perform the request directly from the client and even file protocol without needing to host on a server
-          var xhttp = new XMLHttpRequest();
-          var formData = new FormData();    
-          xhttp.onreadystatechange = function() {
-        
-              if (this.readyState == 4 && this.status == 200){
-                var response = JSON.parse(xhttp.responseText);
-                callback(response.data);//let the callback decide how to use the data
-              }
-        
-          }
-
-          for (var filterKey in filters){        
-              //we could abstract and decouple the query string generation method from the vue componenet even further by creating a utility object with a generateQueryParams function
-              queryString+='&'+filterKey+'='+filters[filterKey];
-          }
-          xhttp.open(consts.urls.giffySearch.type, consts.urls.giffySearch.base+queryString, true);
-          xhttp.send();
+        updateSearchResults: function(){
+          var defaults = consts.urls.giffySearch.filters;
+          giffySearch(new Filter(app.$data.searchParam, defaults.limit, defaults.offset, defaults.rating, defaults.lang), function(searchResults){
+            app.$data.giffyResults = searchResults;
+          });
         }
+        
       },
       components: {
         'giffy-wheel': GiffyWheel
       },
       created: function(){
-        
-        var that = this;
-        this.giffySearch(consts.urls.giffySearch.filters, function(searchResults){
+
+        giffySearch(consts.urls.giffySearch.filters, function(searchResults){
+
           app.$data.giffyResults = searchResults;
         });
       }
