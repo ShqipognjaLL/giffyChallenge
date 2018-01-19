@@ -3,6 +3,7 @@
 <head>
   <title>Welcome to Vue</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/main.css">
   <script src="https://unpkg.com/vue"></script>
 </head>
 <body>
@@ -10,7 +11,7 @@
     <div class="nav fixed-bottom justify-content-center">
       <input id="mainSearchBar" v-model="searchParam"></input><button v-on:click="updateSearchResults">Search</button>
     </div>
-    <giffy-wheel v-bind:giffy-results="giffyResults"></giffy-wheel>
+    <giffy-wheel  v-bind:giffy-results="giffyResults"></giffy-wheel>
   </div>
 
   <script>
@@ -74,7 +75,7 @@
     //Components
     var GiffyWheel = {
       //Question: Vue.js documentation indicates that Vue.js does not implemnt templateURLs like angular. Does the team implemenet a workaround? 
-      template : '<ul class="container-fluid"><li v-for="row in paginatedResults" class="row"><img v-for="(gif, index) in row" :src="gif.images.fixed_height_small_still.url" class="col-2 img-fluid" v-bind:class="isFirst(index)"/></li></ul>',
+      template : '<ul id="main_result_list" class="container-fluid"><li v-for="row in paginatedResults" class="row"><img v-for="(gif, index) in row" :src="gif.images.fixed_height_small_still.url" class="col-2 img-fluid rounded-circle" v-bind:class="isFirst(index)"/></li></ul>',
       props: ['giffyResults'],
       computed: {
         paginatedResults: function(){
@@ -92,7 +93,7 @@
       methods: {
         isFirst: function(index){
          
-          var offsetClass = "offset-1"
+          var offsetClass = "offset-1 margin-counter-offset"
           if(index == 0){
             return offsetClass;
           }
