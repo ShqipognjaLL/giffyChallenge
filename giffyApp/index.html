@@ -75,7 +75,7 @@
     //Components
     var GiffyWheel = {
       //Question: Vue.js documentation indicates that Vue.js does not implemnt templateURLs like angular. Does the team implemenet a workaround? 
-      template : '<ul id="main_result_list" ref="resultList" class="container-fluid"><li v-for="(row, row_index) in paginatedResults" class="row"><img v-for="(gif, col_index) in row" :src="gif.images.fixed_height_small_still.url" class="col-2 img-fluid rounded-circle" v-bind:class="isFirst(col_index)" v-bind:style="maintainOrientation(row_index, col_index)" @mouseenter="updateFocus"  @mouseleave="updateFocus"/></li></ul>',
+      template : '<ul id="main_result_list" ref="resultList" class="container-fluid"><li v-for="(row, row_index) in paginatedResults" class="row"><img v-for="(gif, col_index) in row" :src="evaluateSrc(gif, true)" class="col-2 img-fluid rounded-circle" v-bind:class="isFirst(col_index)" v-bind:style="maintainOrientation(row_index, col_index)" @mouseenter="updateFocus"  @mouseleave="updateFocus"/></li></ul>',
       props: ['giffyResults'],
       computed: {
         paginatedResults: function(){
@@ -111,11 +111,22 @@
           if (e.type.toUpperCase()==="MOUSEENTER"){
             e.target.classList.add("modalFocus");
             this.$refs.resultList.classList.add("hovering");
+            e.target.setAttribute("src", evaluateSrc)
           }else{
             e.target.classList.remove("modalFocus");
             this.$refs.resultList.classList.remove("hovering");
           }
           
+        },
+        evaluateSrc: function(gifResponseObject, boolStatic){
+          //TODO load appropriate size based on current window size/device size for improved immsage scaling/resolution
+          var src;
+          if(boolStatic){
+            src = gifResponseObject.images.fixed_height_small_still.url;
+          }else{
+            src = gifResponseObject.images.fixed_height_small.url
+          }
+          return src;
         }
       }
     }
