@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Welcome to Vue</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
   <script src="https://unpkg.com/vue"></script>
 </head>
 <body>
@@ -34,7 +35,7 @@
           trending: {
             type: 'GET',
             base: 'https://api.giphy.com/v1/gifs/trending',
-            defaultFilters: new Filter(null, 25, null, 'PG-13', null)
+            defaultFilters: new Filter(null, 23, null, 'PG-13', null)
           }
 
         
@@ -71,8 +72,21 @@
     //Components
     var GiffyWheel = {
       //Question: Vue.js documentation indicates that Vue.js does not implemnt templateURLs like angular. Does the team implemenet a workaround? 
-      template : '<ul><li v-for="gif in giffyResults"><img :src="gif.images.fixed_height_small_still.url"/></li></ul>',
-      props: ['giffyResults']
+      template : '<ul class="container"><li v-for="row in paginatedResults" class="row"><img v-for="gif in row" :src="gif.images.fixed_height_small_still.url" class="col-sm"/></li></ul>',
+      props: ['giffyResults'],
+      computed: {
+        paginatedResults: function(){
+          var nestedArray = [];
+          var offset=0;
+          //TODO make 5 a pagination parameter
+          for(var i=5; i<this.giffyResults.length; i+=5){
+            nestedArray.push(this.giffyResults.slice(offset, i));
+            offset = i;
+          }
+          nestedArray.push(this.giffyResults.slice(offset));//get remaining elements 
+          return nestedArray;
+        }
+      }
     }
     var app = new Vue({
       el: '#app',
