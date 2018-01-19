@@ -7,7 +7,7 @@
 </head>
 <body>
   <div id="app">
-    <div class="nav justify-content-center">
+    <div class="nav fixed-bottom justify-content-center">
       <input id="mainSearchBar" v-model="searchParam"></input><button v-on:click="updateSearchResults">Search</button>
     </div>
     <giffy-wheel v-bind:giffy-results="giffyResults"></giffy-wheel>
