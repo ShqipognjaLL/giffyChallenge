@@ -75,7 +75,7 @@
     //Components
     var GiffyWheel = {
       //Question: Vue.js documentation indicates that Vue.js does not implemnt templateURLs like angular. Does the team implemenet a workaround? 
-      template : '<ul id="main_result_list" class="container-fluid"><li v-for="(row, row_index) in paginatedResults" class="row"><img v-for="(gif, col_index) in row" :src="gif.images.fixed_height_small_still.url" class="col-2 img-fluid rounded-circle" v-bind:class="isFirst(col_index)" v-bind:style="maintainOrientation(row_index, col_index)"/></li></ul>',
+      template : '<ul id="main_result_list" class="container-fluid"><li v-for="(row, row_index) in paginatedResults" class="row"><img v-for="(gif, col_index) in row" :src="gif.images.fixed_height_small_still.url" class="col-2 img-fluid rounded-circle" v-bind:class="isFirst(col_index)" v-bind:style="maintainOrientation(row_index, col_index)" @mouseenter="updateFocus"  @mouseleave="updateFocus"/></li></ul>',
       props: ['giffyResults'],
       computed: {
         paginatedResults: function(){
@@ -105,6 +105,17 @@
         maintainOrientation: function(yPosition, xPosition){
          
           return {transformOrigin: xPosition/5*100+"% "+yPosition/5*100+"%"}
+        },
+        updateFocus: function(e){
+          
+          if (e.type.toUpperCase()==="MOUSEENTER"){
+            e.target.classList.add("modalFocus");
+            app.$el.classList.add("blurFocus");
+          }else{
+            e.target.classList.remove("modalFocus");
+            app.$el.classList.remove("blurFocus");
+          }
+          
         }
       }
     }
