@@ -3,8 +3,36 @@
 <head>
   <title>Welcome to Vue</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
-  <link rel="stylesheet" href="css/main.css">
+  <style>
+    #main_result_list li{
+      padding-bottom: 1%;
+    }
+
+    #main_result_list li img{
+      border: thick solid lightgrey;
+      padding: 0;
+      transition: all .2s ease-in-out;
+    }
+    #main_result_list.hovering li img:not(.modalFocus){
+      z-index: 0;
+      opacity: .3;
+    }
+    #main_result_list li img:hover{
+      transform: scale(2);
+      
+      transform-origin: left top;
+    }
+    #main_result_list li img:not(:first-child){
+      margin-left: 1%;
+    }
+
+    .modalFocus{
+      z-index: 1;
+      opacity: 1;
+    }
+  </style>
   <script src="https://unpkg.com/vue"></script>
+
 </head>
 <body>
   <div id="app">
